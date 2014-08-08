@@ -7,9 +7,9 @@ import (
 )
 
 type consumer struct {
+	In     chan []byte
 	conn   net.Conn
 	es     *eventSource
-	in     chan []byte
 	staled bool
 }
 
@@ -20,9 +20,9 @@ func newConsumer(resp http.ResponseWriter, req *http.Request, es *eventSource) (
 	}
 
 	consumer := &consumer{
+		In:     make(chan []byte, 10),
 		conn:   conn,
 		es:     es,
-		in:     make(chan []byte, 10),
 		staled: false,
 	}
 
@@ -58,7 +58,7 @@ func newConsumer(resp http.ResponseWriter, req *http.Request, es *eventSource) (
 		defer idleTimer.Stop()
 		for {
 			select {
-			case message, open := <-consumer.in:
+			case message, open := <-consumer.In:
 				if !open {
 					consumer.conn.Close()
 					return

@@ -121,7 +121,7 @@ func controlProcess(es *eventSource) {
 					// Only send this message if the consumer isn't staled
 					if !c.staled {
 						select {
-						case c.in <- message:
+						case c.In <- message:
 						default:
 						}
 					}
@@ -133,7 +133,7 @@ func controlProcess(es *eventSource) {
 
 			for e := es.consumers.Front(); e != nil; e = e.Next() {
 				c := e.Value.(*consumer)
-				close(c.in)
+				close(c.In)
 			}
 
 			return
@@ -164,7 +164,7 @@ func controlProcess(es *eventSource) {
 					es.consumers.Remove(e)
 				}
 			}()
-			close(c.in)
+			close(c.In)
 		}
 	}
 }
