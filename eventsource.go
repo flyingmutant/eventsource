@@ -223,6 +223,11 @@ func (es *eventSource) SendRetryMessage(t time.Duration) {
 	es.sendMessage(&retryMessage{t})
 }
 
+func ConstructEventMessage(data, event, id string) []byte {
+	em := &eventMessage{id, event, data}
+	return em.prepareMessage()
+}
+
 func (es *eventSource) NewConsumer(resp http.ResponseWriter, req *http.Request) (*consumer, error) {
 	return newConsumer(resp, req, es)
 }
