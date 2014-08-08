@@ -76,6 +76,9 @@ type EventSource interface {
 	// send retry message to all consumers
 	SendRetryMessage(duration time.Duration)
 
+	NewConsumer(resp http.ResponseWriter, req *http.Request) (*consumer, error)
+	AddConsumer(c *consumer)
+
 	// consumers count
 	ConsumersCount() int
 
@@ -218,6 +221,14 @@ func (m *retryMessage) prepareMessage() []byte {
 
 func (es *eventSource) SendRetryMessage(t time.Duration) {
 	es.sendMessage(&retryMessage{t})
+}
+
+func (es *eventSource) NewConsumer(resp http.ResponseWriter, req *http.Request) (*consumer, error) {
+	return newConsumer(resp, req, es)
+}
+
+func (es *eventSource) AddConsumer(c *consumer) {
+	es.add <- c
 }
 
 func (es *eventSource) ConsumersCount() int {
